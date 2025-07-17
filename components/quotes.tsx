@@ -1,11 +1,15 @@
 import prisma from '@/lib/db'
 import { QuoteKind } from '@/lib/prisma-enums'
+import { connection } from 'next/server'
 
 // Disable caching. If 'force-dynamic' is not used, stale data can be returned from Prisma Client.
 // Learn more here: https://www.prisma.io/docs/orm/more/help-and-troubleshooting/help-articles/nextjs-prisma-client-dynamic.
 export const dynamic = 'force-dynamic'
 
 export async function Quotes() {
+  // Note: `connection` prevents this page from being prerendered.
+  // This will cause Prisma to actually being used at runtime.
+  await connection()
   const quotes = await prisma.quotes.findMany({
     orderBy: {
       createdAt: 'desc',
